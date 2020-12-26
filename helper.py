@@ -12,8 +12,8 @@ def parse_doc(filename):
 def looper(data):
     panels = []
     panel_type = False
+    panel_data = {}
     for i in range(len(data) - 10):
-        panel_data = {}
         """
         if ls[0-5] is Item No., etc., then store all of those into list
         """
@@ -28,7 +28,6 @@ def looper(data):
                 panel_data["material"] = description[4]
                 panel_data["lugs"] = description[7]
                 panel_data["circuits"] = description[0]
-                print(panel_data)
         """
         Get catalog no + designation if designation exists
         """
@@ -39,10 +38,12 @@ def looper(data):
             if panel_type:
                 # print(catalogno)
                 panel_data["catalogno"] = catalogno
+                if panel_data:
+                    panels.append(panel_data)
+                panel_data = {}
                 panel_type = False
 
-        if panel_data:
-            panels.append(panel_data)
+       
             
     return panels
     
@@ -83,8 +84,7 @@ def catalog_no(data, pointer):
     elif data[pointer] == "Catalog No" and (data[pointer + 2] != "Designation" and data[pointer + 2] != 'List of Materials'):
         catalog = data[pointer + 1]
         return (catalog)
-    else:
-        return None
+
 
 def get_item(data, pointer):
     if ("Item No." in data[pointer] and "Qty" in data[pointer + 1] 

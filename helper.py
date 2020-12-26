@@ -1,7 +1,7 @@
 import textract
 
 def parse_doc(filename):
-    text = textract.process('sample.DOCX')
+    text = textract.process('./tmp/{0}'.format(filename))
     ls = []
     for i in text.split(b'\n'):
         if i:
@@ -10,22 +10,42 @@ def parse_doc(filename):
     return ls
 
 def looper(data):
+    panels = []
+    panel_type = False
     for i in range(len(data) - 10):
+        panel_data = {}
         """
         if ls[0-5] is Item No., etc., then store all of those into list
         """
-        get_item(data, i)
-
+        item = get_item(data, i)
+        if item:
+            qty, product, description, price, quote = item
+            if "Panelboards" in product and description:
+                panel_type = True
+                panel_data["volt"] = description[3]
+                panel_data["amps"] = description[1]
+                panel_data["kaic"] = description[5]
+                panel_data["material"] = description[4]
+                panel_data["lugs"] = description[7]
+                panel_data["circuits"] = description[0]
+                print(panel_data)
         """
         Get catalog no + designation if designation exists
         """
-        catalog_no(data, i)
-        
+        catalogno = catalog_no(data, i)
+        if catalogno:
+            if len(catalogno) == 2:
+                catalogno = catalogno[0]
+            if panel_type:
+                # print(catalogno)
+                panel_data["catalogno"] = catalogno
+                panel_type = False
+
+        if panel_data:
+            panels.append(panel_data)
+            
+    return panels
     
-        """
-        if ls[0] is "Qty" and ls[1] is "List of Materials", run list_of_materials until Qty column is not zero
-        """
-        list_of_materials(data, i)
 
 
 def list_of_materials(data, pointer):
@@ -56,14 +76,15 @@ def list_of_materials(data, pointer):
             temp_pt += 3
 
 def catalog_no(data, pointer):
-    if data[pointer] == "Catalog No" and data[pointer + 2] == "Designation":
+    if data[pointer] and data[pointer + 2] and data[pointer] == "Catalog No" and data[pointer + 2] == "Designation":
         catalog = data[pointer + 1]
         designation = data[pointer + 3]
-        print([catalog, designation])
+        return (catalog, designation)
     elif data[pointer] == "Catalog No" and (data[pointer + 2] != "Designation" and data[pointer + 2] != 'List of Materials'):
         catalog = data[pointer + 1]
-        print([catalog])
-
+        return (catalog)
+    else:
+        return None
 
 def get_item(data, pointer):
     if ("Item No." in data[pointer] and "Qty" in data[pointer + 1] 
@@ -83,6 +104,8 @@ def get_item(data, pointer):
         
         if description:
             description_ls = [x.strip() for x in description.split(",")]
-            print([qty, product, description_ls, unit_price, extended_quote])
+            return (qty, product, description_ls, unit_price, extended_quote)
         else:
-            print([qty, product, description, unit_price, extended_quote])
+            return (qty, product, description, unit_price, extended_quote)
+    else:
+        return None

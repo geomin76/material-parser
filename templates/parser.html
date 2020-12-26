@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Here is your data</h1>
+<table>
+<tr>
+    <th>Voltage</th>
+    <th>Ampere</th>
+    <th>Min KA</th>
+    <th>Material</th>
+    <th>Lugs</th>
+    <th>Circuits</th>
+    <th>Catalog No.</th>
+</tr>
+
+{% for row in data %}
+
+<tr>
+{% for k, v in row.items() %}
+    <td>{{ v }}</td>
+{% endfor %}
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock %}

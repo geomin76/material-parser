@@ -15,6 +15,11 @@ def looper(data):
         if ls[0-5] is Item No., etc., then store all of those into list
         """
         get_item(data, i)
+
+        """
+        Get catalog no + designation if designation exists
+        """
+        catalog_no(data, i)
         
     
         """
@@ -25,7 +30,6 @@ def looper(data):
 
 def list_of_materials(data, pointer):
     if "Catalog No" not in data[pointer] and "Qty" in data[pointer + 1] and "List of Materials" in data[pointer + 2]:
-        print("two column list of materials")
         temp_pt = pointer + 2
         qty = data[temp_pt + 1]
         while qty.isnumeric():
@@ -40,7 +44,6 @@ def list_of_materials(data, pointer):
             temp_pt += 2
 
     elif "Catalog No" in data[pointer] and "Qty" in data[pointer + 1] and "List of Materials" in data[pointer + 2]:
-        print("three column list of materials")
         temp_pt = pointer + 2
         qty = data[temp_pt + 2]
         while qty.isnumeric():
@@ -51,6 +54,15 @@ def list_of_materials(data, pointer):
             material = data[temp_pt + 3]
             print([catalog, qty, material])
             temp_pt += 3
+
+def catalog_no(data, pointer):
+    if data[pointer] == "Catalog No" and data[pointer + 2] == "Designation":
+        catalog = data[pointer + 1]
+        designation = data[pointer + 3]
+        print([catalog, designation])
+    elif data[pointer] == "Catalog No" and (data[pointer + 2] != "Designation" and data[pointer + 2] != 'List of Materials'):
+        catalog = data[pointer + 1]
+        print([catalog])
 
 
 def get_item(data, pointer):

@@ -11,8 +11,6 @@ def parse_doc(filename):
 
 def looper(data):
     for i in range(len(data) - 10):
-        # print(data[i])
-
         """
         if ls[0-5] is Item No., etc., then store all of those into list
         """
@@ -28,15 +26,37 @@ def looper(data):
 def list_of_materials(data, pointer):
     if "Catalog No" not in data[pointer] and "Qty" in data[pointer + 1] and "List of Materials" in data[pointer + 2]:
         print("two column list of materials")
+        temp_pt = pointer + 2
+        qty = data[temp_pt + 1]
+        while qty.isnumeric():
+            qty = data[temp_pt + 1]
+            material = data[temp_pt + 2]
+            if material.isnumeric():
+                material = ""
+                print([qty, material])
+                temp_pt += 1
+                continue
+            print([qty, material]) 
+            temp_pt += 2
 
     elif "Catalog No" in data[pointer] and "Qty" in data[pointer + 1] and "List of Materials" in data[pointer + 2]:
         print("three column list of materials")
+        temp_pt = pointer + 2
+        qty = data[temp_pt + 2]
+        while qty.isnumeric():
+            catalog = data[temp_pt + 1]
+            qty = data[temp_pt + 2]
+            if not qty.isnumeric():
+                continue
+            material = data[temp_pt + 3]
+            print([catalog, qty, material])
+            temp_pt += 3
+
 
 def get_item(data, pointer):
     if ("Item No." in data[pointer] and "Qty" in data[pointer + 1] 
         and "Product" in data[pointer + 2] and "Description" in data[pointer + 3]
         and "Unit  Quote Price" in data[pointer + 4] and "Extended Quote" in data[pointer + 5]):
-
 
         qty = data[pointer + 6]
         product = data[pointer + 7]
@@ -48,8 +68,12 @@ def get_item(data, pointer):
         else:
             unit_price = data[pointer + 9]
             extended_quote = data[pointer + 10]
-
-        print([qty, product, description, unit_price, extended_quote])
+        
+        if description:
+            description_ls = [x.strip() for x in description.split(",")]
+            print([qty, product, description_ls, unit_price, extended_quote])
+        else:
+            print([qty, product, description, unit_price, extended_quote])
 
 
 if __name__ == "__main__":

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Hello, World</h1>
+
+<form>
+    <label for="doc">Upload your file! Can only take .DOC and .DOCX extensions.</label><br><br>
+    <input type="file" id="doc" name="doc"><br><br><br>
+    <!-- <input type="checkbox" id="catalogno" name="catalogno" value="Yes">
+    <label for="catalogno">Check for Catalog No</label><br>
+    <br> -->
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock %}
